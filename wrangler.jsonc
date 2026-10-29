@@ -7,34 +7,32 @@
 	"name": "strava-mcp",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-03-10",
+	// v1 created the Durable Object this server used to run in; v2 removes it,
+	// now that the MCP endpoint is served statelessly. Both entries have to stay:
+	// wrangler replays the whole migration history.
 	"migrations": [
 		{
 			"new_sqlite_classes": [
 				"StravaMCP"
 			],
 			"tag": "v1"
+		},
+		{
+			"deleted_classes": [
+				"StravaMCP"
+			],
+			"tag": "v2"
 		}
 	],
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	"durable_objects": {
-		"bindings": [
-			{
-				"class_name": "StravaMCP",
-				"name": "MCP_OBJECT"
-			}
-		]
-	},
 	"kv_namespaces": [
 		{
 			"binding": "OAUTH_KV",
 			"id": "<Add-KV-ID>"
 		}
 	],
-	"ai": {
-		"binding": "AI"
-	},
 	"observability": {
 		"enabled": true
 	},
