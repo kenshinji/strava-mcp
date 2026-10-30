@@ -807,13 +807,18 @@ export default new OAuthProvider({
 	authorizeEndpoint: "/authorize",
 	tokenEndpoint: "/token",
 	clientRegistrationEndpoint: "/register",
+	// The provider only writes props back when they arrive under `newProps`;
+	// anything else in the result is ignored. Returning the props flat therefore
+	// threw the refreshed Strava tokens away, and the grant kept serving the
+	// access token minted at authorize time until Strava expired it after 6h.
 	tokenExchangeCallback: async (options) => {
 		if (options.grantType === "refresh_token") {
 			return {
-				...options.props,
-				...await refreshStravaToken(options.props.refreshToken)
+				newProps: {
+					...options.props,
+					...(await refreshStravaToken(options.props.refreshToken)),
+				},
 			}
 		}
-		return options.props
 	}
 });
